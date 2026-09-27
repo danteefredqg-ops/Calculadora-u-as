@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7a3e8e">
+  <title>Bloom Studio · Calculadora</title>
+  <link rel="icon" href="img/logo.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css?v=5">
+</head>
+<body>
+  <header class="encabezado">
+    <img src="img/logo.jpeg" alt="Logo de Bloom Studio" class="logo" onerror="this.remove()">
+    <div>
+      <h1 id="nombre-negocio">Bloom Studio</h1>
+      <p>Calculadora de precios</p>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab activo" data-tab="calcular">Calcular</button>
+    <button class="tab" data-tab="disenos">Diseños</button>
+    <button class="tab" data-tab="materiales">Materiales</button>
+    <button class="tab" data-tab="servicios">Servicios</button>
+    <button class="tab" data-tab="ajustes">Ajustes</button>
+  </nav>
+
+  <main>
+    <!-- ============ CALCULAR ============ -->
+    <section id="tab-calcular" class="panel activo">
+      <div class="tarjeta">
+        <label>Servicio
+          <select id="c-servicio"></select>
+        </label>
+        <div id="bloque-largo" class="campo">
+          <span class="campo-titulo">Largo</span>
+          <div id="c-largo" class="chips"></div>
+        </div>
+        <label>Piedras (cantidad total)
+          <input type="number" id="c-piedras" min="0" step="1" value="0" inputmode="numeric">
+        </label>
+      </div>
+
+      <div id="bloque-disenos" class="tarjeta">
+        <h2>Diseños por uña</h2>
+        <label>Diseño a aplicar
+          <select id="c-diseno"></select>
+        </label>
+        <p class="nota">Toca las uñas que llevan este diseño. Luego elige otro diseño y toca otras uñas. Si tocas una uña que ya tiene ese diseño, vuelve a quedar lisa.</p>
+        <div class="manos">
+          <div class="mano">
+            <p class="mano-titulo">Mano izquierda</p>
+            <div id="mano-izq" class="dedos"></div>
+          </div>
+          <div class="mano">
+            <p class="mano-titulo">Mano derecha</p>
+            <div id="mano-der" class="dedos"></div>
+          </div>
+        </div>
+        <div class="botones">
+          <button class="btn btn-secundario" data-aplicar="todas">Aplicar a las 10</button>
+          <button class="btn btn-secundario" data-aplicar="izq">Solo mano izquierda</button>
+          <button class="btn btn-secundario" data-aplicar="der">Solo mano derecha</button>
+          <button class="btn btn-peligro" data-aplicar="limpiar">Quitar diseños</button>
+        </div>
+        <ul id="r-disenos" class="resumen-disenos"></ul>
+      </div>
+
+      <div class="tarjeta resultado">
+        <p class="etiqueta">Precio sugerido</p>
+        <p id="r-precio" class="precio">$0</p>
+        <p id="r-queda" class="queda"></p>
+        <p id="r-tiempo" class="nota"></p>
+        <dl id="r-desglose" class="desglose"></dl>
+        <details>
+          <summary>Ver materiales usados</summary>
+          <ul id="r-materiales" class="lista-materiales"></ul>
+        </details>
+      </div>
+
+      <div class="tarjeta">
+        <label>¿Cuánto cobras tú actualmente? (opcional)
+          <input type="number" id="c-mi-precio" min="0" step="any" inputmode="decimal" placeholder="Ej. 250">
+        </label>
+        <p id="r-comparar" class="comparar"></p>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Enviar por WhatsApp</h2>
+        <label>¿Qué enviar?
+          <select id="w-tipo">
+            <option value="clienta">Imagen de cotización para la clienta</option>
+            <option value="desglose">Desglose completo en texto (para mí)</option>
+          </select>
+        </label>
+        <label>Número de la clienta (10 dígitos, opcional)
+          <input type="tel" id="w-numero" placeholder="Si lo dejas vacío, eliges el chat en WhatsApp">
+        </label>
+        <button id="btn-whatsapp" class="btn btn-whatsapp">Crear y enviar</button>
+      </div>
+
+      <dialog id="dlg-cotizacion" class="dialogo">
+        <img id="img-cotizacion" alt="Vista previa de la cotización">
+        <p id="dlg-nota" class="nota"></p>
+        <div class="botones">
+          <button id="btn-compartir" class="btn btn-whatsapp">Compartir</button>
+          <button id="btn-descargar" class="btn btn-secundario">Descargar imagen</button>
+          <button id="btn-copiar" class="btn btn-secundario">Copiar imagen</button>
+          <button id="btn-abrir-chat" class="btn btn-secundario">Abrir chat de WhatsApp</button>
+          <button id="btn-cerrar" class="btn btn-peligro">Cerrar</button>
+        </div>
+      </dialog>
+    </section>
+
+    <!-- ============ DISEÑOS ============ -->
+    <section id="tab-disenos" class="panel">
+      <div class="tarjeta ayuda">
+        <p><strong>Cobro por uña:</strong> lo que cobras por cada uña con ese diseño.</p>
+        <p><strong>Minutos y material por uña:</strong> lo que te lleva de tiempo y de material extra. Con eso la página te sugiere un precio y te dice cuánto ganas por hora.</p>
+      </div>
+      <div id="lista-disenos"></div>
+      <button class="btn btn-secundario" data-agregar="disenos">+ Agregar diseño</button>
+    </section>
+
+    <!-- ============ MATERIALES ============ -->
+    <section id="tab-materiales" class="panel">
+      <div class="tarjeta ayuda">
+        <p><strong>Precio:</strong> lo que te costó el envase o paquete.</p>
+        <p><strong>Rinde:</strong> cuántos servicios completos alcanzas a hacer con él (en largo 1).</p>
+        <p class="tip">Tip para saberlo: pesa el envase nuevo en una báscula de cocina, vuelve a pesarlo después de 5 clientas y calcula cuánto gastas por servicio. Mientras tanto, usa un número aproximado.</p>
+      </div>
+      <div id="lista-materiales"></div>
+      <button class="btn btn-secundario" data-agregar="materiales">+ Agregar material</button>
+    </section>
+
+    <!-- ============ SERVICIOS ============ -->
+    <section id="tab-servicios" class="panel">
+      <div class="tarjeta ayuda">
+        <p><strong>Minutos:</strong> cuánto tardas en largo 1 y sin diseño (incluye preparar y limpiar la mesa).</p>
+        <p><strong>Uso:</strong> 1 = una porción normal del material; 0.5 = la mitad (por ejemplo, en un relleno).</p>
+      </div>
+      <div id="lista-servicios"></div>
+      <button class="btn btn-secundario" id="btn-agregar-servicio">+ Agregar servicio</button>
+    </section>
+
+    <!-- ============ AJUSTES ============ -->
+    <section id="tab-ajustes" class="panel">
+      <div class="tarjeta">
+        <h2>Tu negocio</h2>
+        <label>Nombre del negocio
+          <input type="text" data-ruta="negocio.nombre">
+        </label>
+        <label>Tu WhatsApp (se usa si no escribes otro número)
+          <input type="tel" data-ruta="negocio.whatsapp" placeholder="10 dígitos">
+        </label>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Tu ganancia</h2>
+        <label>¿Cuánto quieres ganar por hora de trabajo? ($)
+          <input type="number" min="0" step="any" data-ruta="tarifaHora">
+        </label>
+        <label>Margen extra del negocio (%)
+          <input type="number" min="0" step="any" data-ruta="margen">
+        </label>
+        <label>Redondear precio a múltiplos de ($)
+          <input type="number" min="0" step="1" data-ruta="redondeo">
+        </label>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Piedras</h2>
+        <label>Lo que te cuesta cada piedra ($)
+          <input type="number" min="0" step="any" data-ruta="piedra.costo">
+        </label>
+        <label>Lo que cobras por cada piedra ($)
+          <input type="number" min="0" step="any" data-ruta="piedra.precio">
+        </label>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Gastos fijos del mes</h2>
+        <p class="nota">Gastos que tienes aunque no atiendas a nadie. Se reparten entre los servicios del mes.</p>
+        <div id="lista-gastosFijos"></div>
+        <button class="btn btn-secundario" data-agregar="gastosFijos">+ Agregar gasto</button>
+        <label>¿Cuántos servicios calculas hacer al mes?
+          <input type="number" min="1" step="1" data-ruta="serviciosMes">
+        </label>
+        <p id="r-fijos" class="nota"></p>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Largos</h2>
+        <p class="nota"><strong>×Material:</strong> 1.2 = gasta 20% más material que en el largo 1. <strong>Min. extra:</strong> tiempo adicional por ese largo.</p>
+        <div id="lista-largos"></div>
+        <button class="btn btn-secundario" data-agregar="largos">+ Agregar largo</button>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Respaldo</h2>
+        <p class="nota">Tus datos se guardan en este dispositivo. Descarga un respaldo de vez en cuando o para pasarlos a otro celular.</p>
+        <div class="botones">
+          <button class="btn btn-secundario" id="btn-exportar">Descargar respaldo</button>
+          <label class="btn btn-secundario">Cargar respaldo
+            <input type="file" id="archivo-importar" accept=".json,application/json" hidden>
+          </label>
+          <button class="btn btn-peligro" id="btn-restaurar">Restaurar datos de ejemplo</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/datos.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
+</body>
+</html>
